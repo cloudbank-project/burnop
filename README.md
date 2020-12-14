@@ -9,5 +9,5 @@ computations to perform on your data. If you are not a cloud computing expert: T
 ## The Basics
 
 * Code profiling
-* Use pre-emptible 
+* Use pre-emptible instances ((AWS)[https://aws.amazon.com/ec2/spot/]) ((GCP)[https://cloud.google.com/preemptible-vms/]) (Azure) (IBM)
 * Top, vCPUs, cores, threads, and dashboard monitors
