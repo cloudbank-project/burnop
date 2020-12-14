@@ -1,10 +1,10 @@
 # Monte Carlo profiling
 
 I found this quote on [stack overflow](https://stackoverflow.com/questions/3045556/how-to-profile-my-code/3068045): 
-Very amusing and threatens to be useful as well...
+Very amusing and threatens to be useful as well. In response to "How do I profile my code?"
 
 
-> The standard answer to this question is to use cProfile.
+> The standard answer to this question is to use **cProfile**.
 > 
 > You'll find though that without having your code separated out into methods that cProfile won't give you particularly rich information.
 > 
