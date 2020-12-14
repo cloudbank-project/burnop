@@ -10,5 +10,5 @@ computations to perform on your data. If you are not a cloud computing expert: T
 
 * Code profiling
 * Checkpointing
-    * Pre-emptible instances ([AWS](https://aws.amazon.com/ec2/spot/)) ([GCP](https://cloud.google.com/preemptible-vms/)) ([Azure](https://docs.microsoft.com/en-us/azure/batch/batch-low-pri-vms)) ([IBM](https://www.ibm.com/cloud/virtual-servers/details) (no low-cost preemptible service visible as of 12/20))
+    * Pre-emptible instances ([AWS](https://aws.amazon.com/ec2/spot/)) ([GCP](https://cloud.google.com/preemptible-vms/)) ([Azure](https://docs.microsoft.com/en-us/azure/batch/batch-low-pri-vms))
 * Top, vCPUs, cores, threads, and dashboard monitors
