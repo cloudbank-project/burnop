@@ -4,7 +4,7 @@ I found this quote on [stack overflow](https://stackoverflow.com/questions/30455
 Very amusing and threatens to be useful as well. In response to "How do I profile my code?"
 
 
-> The standard answer to this question is to use **cProfile**.
+> The standard answer to this question is to use [**cProfile**](http://docs.python.org/library/profile.html#instant-user-s-manual).
 > 
 > You'll find though that without having your code separated out into methods that cProfile won't give you particularly rich information.
 > 
