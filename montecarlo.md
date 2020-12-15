@@ -1,7 +1,7 @@
 # Monte Carlo profiling
 
-I found this quote on [stack overflow](https://stackoverflow.com/questions/3045556/how-to-profile-my-code/3068045): 
-Very amusing and threatens to be useful as well. In response to "How do I profile my code?"
+I found this response on [stack overflow](https://stackoverflow.com/questions/3045556/how-to-profile-my-code/3068045): 
+Actually a quote within a quote. It is both amusing and useful-sounding. In response to the question "How do I profile my code?"
 
 
 > The standard answer to this question is to use [**cProfile**](http://docs.python.org/library/profile.html#instant-user-s-manual).
