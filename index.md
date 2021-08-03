@@ -1,37 +1,36 @@
-## Welcome to GitHub Pages
+# Welcome to the CloudBank Solution: *Burnop*
 
-You can use the [editor on GitHub](https://github.com/cloudbank-project/burnop/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This CloudBank Solution describes five basic measures that can help you optimize your cloud spend (or *burn rate*). 
+The cost comparisons given below are hypothetical to provide a sense of scale.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+* Use pre-emptible instances, cost $0.30 in comparison with $1.00
+* Ensure you are not being charged indirect cost overhead on your cloud spend, cost $1.00 in comparison with $1.50
+* Check your compute task usage using a CPU monitoring utility such as **`top`**, cost $1.00 in comparison with $8.00
+* Use an automatic **`Stop`** utility on your Virtual Machines, cost $1.00 in comparison with $3.00
+* Guard against committing your keys to public locations such as GitHub, cost $1.00 in comparison with $15,000.00
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
-```markdown
-Syntax highlighted code block
+Each of these cost-saving measures is covered below: We have tried to indicate both why there is a cost savings
+to you the researcher as well as what the learning process is like to successfully use these strategies.
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
 
-[Link](url) and ![Image](src)
-```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### Pre-emptible instances
 
-### Jekyll Themes
+### Indirect cost waiver
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/cloudbank-project/burnop/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+### CPU monitoring
 
-### Support or Contact
+### Automatic Stop
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+### Publishing keys
+
+
+### CloudBank
+
+CloudBank is an NSF-sponsored program to support academic research built on the public cloud. To learn more
+please visit our [main website](https://cloudbank.org).
