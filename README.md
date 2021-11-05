@@ -2,7 +2,7 @@
 
 This Cloudbank Solution helps you (a research team using the cloud) ***optimize*** your use (***burn***) of cloud resources.
 
-The term **burn** in this context we means *"like rocket fuel"*. You have a cloud budget and you have 
+The term **burn** in this context we mean *"like rocket fuel"*. You have a cloud budget and you have 
 computations to perform on your data. As you compute: How fast are you burning through your budget? 
 
 
