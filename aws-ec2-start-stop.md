@@ -1,34 +1,85 @@
 ## Overview
 
 
-EC2 instances left running (e.g. overnight) cost money. If these instances are doing nothing we stop them and thereby 
-stop paying for them. There is 
-[documentation](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
-online for setting this up. This page is essentially a "personal narrative" 
-version of those instructions. These notes only cover *Stopping* an EC2 at say 7PM every night. 
-Auto-stopping typically saves thousands of dollars in unnecessary cloud spend. 
+EC2 instances left running overnight cost money. We're going to figure out how to turn them on and off automatically
+every day; and our stretch goal is a manual on-switch. Cost management: Begin!
+
+Follow this 
+[documentation link](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
+for the instructions. Here on this page it is a "personal narrative". So first I established a cloud account 
+and then I logged in as an **admin** User. 
 
 
 ## Procedural notes
 
-Following the documentation at the link given above... may we
+> Suggestion: Read through these notes, then go through the procedural at the above link.
 
 
-> suggest: Read these notes, then go through the procedural at the above link.
+A Lambda function is serverless code that runs on AWS in response to a trigger of some sort. 
+We will build **Start** and **Stop** Lambda functions that will be triggered by a daily CloudWatch
+alarm.
+
+> ***IMPORTANT WARNING:*** If you already have an EC2 **work instance** running that includes work you value: 
+> *Do Not Wire These Lambda Functions Into That Instance!!!*  Something could go wrong. Instead set up
+> a test EC2 instance and only when you are satisfied everything is working properly should you re-point
+> the Lambda functions at your work instance. And to be super-safe, back up your work instance to an
+> Amazon Machine Image (AMI). Then if something goes awry you will be able to reconstitute your work instance.
+
+## Starting an EC2
 
 
-The idea is to build two Lambda functions: One to Start an EC2 and one to Stop an EC2. Call these **Start-Lambda** 
-and **Stop-Lambda**. We set a daily CloudWatch alarm for each. When it goes off: The Lambda functions do their job. 
-The remaining notes on this page refer only to the **Stop** operation.
+Here are notes on all seven console-wizard start steps for Launching an EC2.
 
 
-> ***WARNING:*** If you already have an EC2 running that includes work you value: Learn to use this
-> procedure on a different EC2 in case something goes awry. Only whene you are satisfied (say after
-> a couple of days) that it works properly should you re-point it at your working EC2.
+* Region: Before starting the Launch wizard: Select a nearby Region (upper right), in my case US-West-2 Oregon
+* Image (OS): Ubuntu Server 64-bit x86; noting this is a choice of an AMI
+    * The Quick Start is one of four tabs, the others being My AMIs, AWS Marketplace and Community AMIs
+    * Question for Joel: Talk about these other tabs, how they might jump start a project
+* Instance Type: **c4.large** as a cheap test VM
+* Configure Instance... here we use strictly Default values; and I add notes on "What is this option good for?"
+    * Number: 1
+    * Spot: No (but this leads to another cost management avenue)
+    * Network: Which VPC to use
+        * For Joel: At what point do you hit this and think 'Definitely need a custom VPC for this instance?
+    * Subnet: Default
+        * For Joel: What drives choice of sub-net? Do these map to AZs? What about *private* subnets? Can we do those here?
+    * Auto-assign public IP: Default
+        * For Joel: What do these options do?
+    * Hostname type: Default
+        * For Joel: What options do we have here? Does the Resource Name mean 'human-friendly URL' possible?
+    * DNS Hostname: Default
+        * For Joel: Again what are the options here?
+    * Placement group: Un-checked
+        * For Joel: What is the function of a Placement group? 
+        * **Cluster**, **Partition** and **Spread** seem to correspond to cluster computing and two types of failsafe...
+        * Could use further explanation. Also how do Placement Groups interact with VPCs? 
+    * Capacity Reservation: Open
+        * For Joel: What does this do?
+    * Domain join directory: No directory
+        * For Joel: When do I need one? AT built braininfo.org; do these persist as zombies? 
+    * IAM Role: None
+        * For Joel: Many are listed in the drop-down. Zero cost zombies?
+        * Cleaning up old Roles: Can we look at one and ask "What resources have this Role?"
+    * CPU Options: Un-checked
+        * For Joel: When checking this are we overriding the instance specs from above?
+    * Shutdown behavior: Stop
+        * For Joel: Terminate option is for disposable use cases... elaborate?
+    * Stop-Hibernate behavior (unchecked): What is this?
+    * Enable Termination Protection (unchecked): Slows down careless terminations?
+    * Monitoring (unchecked): What does CloudWatch cost? Need a heuristic and a value
+    * EBS-optimized: Greyed out. Depends on instance type? What does this optimization do?
+    * Tenancy: Shared. Cost of dedicated? Value of dedicated?
+    * Elastic Inference (unchecked): Function? Cost? Value?
+    * File system (un-used): What does this do? 
 
 
 
-* Region: For us at UW the Oregon region is nearest: `us-west-2`. 
+
+
+
+
+## Prior version of these notes here down
+
 * I created the necessary policy in the JSON editor (under IAM), named it `stop-instances`, tagged it so I know what it does
 * The IAM *Role* for pending Lambdas is `stop-instances`
     * Notice the above *Policy* is in the *Role*. The *Role* is unassociated at this point
