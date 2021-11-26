@@ -230,13 +230,17 @@ We are creating two Lambda functions: **ec2-start** and **ec2-stop**.
 Here is the code. To do: Change the information to reside in environment variables.
 
 ```
-import boto3
-region = 'us-west-2'
-instances = ['i-aaabbbcccdddeeeff']
+import json, os, boto3, datetime
+
+region = os.environ['region']
+snstopic = os.environ['snstopic']
+friendly_EC2_name = os.environ['friendlyaccountname']
+instance_id = os.environ['instance_id']                 # something like 'i-aaabbbcccdddeeeff'
+
 ec2 = boto3.client('ec2', region_name=region)
 
 def lambda_handler(event, context):
-    print('start stopping instances')
-    ec2.stop_instances(InstanceIds=instances)
-    print('done stopping instances')
+    print('start starting instances')
+    ec2.start_instances(InstanceIds=instances)
+    print('done starting instances')
 ```
