@@ -206,7 +206,24 @@ We are creating two Lambda functions: **ec2-start** and **ec2-stop**.
         * Note there are six tabs below the Overview pane: Code, Test, Monitor, Configuration, Aliases, Versions
         * Choose the Code tab
             * In the code source window: click the left sidebar `lambda_function.py` to activate the editor for this file
-            * 
+
+
+```
+import json, os, boto3, datetime
+
+region = os.environ['region']
+sns_topic = os.environ['sns_topic']
+friendly_EC2_name = os.environ['friendly_EC2_name']
+friendly_project_name = os.environ['friendly_project_name']
+instance_id = os.environ['instance_id']                 # something like 'i-aaabbbcccdddeeeff'
+
+ec2 = boto3.client('ec2', region_name=region)
+
+def lambda_handler(event, context):
+    print('start starting instances')
+    ec2.start_instances(InstanceIds=instances)
+    print('done starting instances')
+```
 
 
 > **IMPORTANT:** Make sure to adjust both region and instance values to match your implementation
@@ -229,18 +246,4 @@ We are creating two Lambda functions: **ec2-start** and **ec2-stop**.
 
 Here is the code. To do: Change the information to reside in environment variables.
 
-```
-import json, os, boto3, datetime
 
-region = os.environ['region']
-snstopic = os.environ['snstopic']
-friendly_EC2_name = os.environ['friendlyaccountname']
-instance_id = os.environ['instance_id']                 # something like 'i-aaabbbcccdddeeeff'
-
-ec2 = boto3.client('ec2', region_name=region)
-
-def lambda_handler(event, context):
-    print('start starting instances')
-    ec2.start_instances(InstanceIds=instances)
-    print('done starting instances')
-```
