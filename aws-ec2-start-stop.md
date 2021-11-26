@@ -31,12 +31,12 @@ alarm.
 Here are notes on all seven console-wizard start steps for Launching an EC2.
 
 
-* Region: Before starting the Launch wizard: Select a nearby Region (upper right), in my case US-West-2 Oregon
-* Image (OS): Ubuntu Server 64-bit x86; noting this is a choice of an AMI
+* Step 0 Region: Before starting the Launch wizard: Select a nearby Region (upper right), in my case US-West-2 Oregon
+* Step 1 Image (OS): Ubuntu Server 64-bit x86; noting this is a choice of an AMI
     * The Quick Start is one of four tabs, the others being My AMIs, AWS Marketplace and Community AMIs
     * Question for Joel: Talk about these other tabs, how they might jump start a project
-* Instance Type: **c4.large** as a cheap test VM
-* Configure Instance... here we use strictly Default values; and I add notes on "What is this option good for?"
+* Step 2 Instance Type: **c4.large** as a cheap test VM
+* Step 3 Configure Instance... here we use strictly Default values; and I add notes on "What is this option good for?"
     * Number: 1
     * Spot: No (but this leads to another cost management avenue)
     * Network: Which VPC to use
@@ -71,8 +71,36 @@ Here are notes on all seven console-wizard start steps for Launching an EC2.
     * Tenancy: Shared. Cost of dedicated? Value of dedicated?
     * Elastic Inference (unchecked): Function? Cost? Value?
     * File system (un-used): What does this do? 
+* Step 4 Add Storage
+    * Upped my may file system to 96GB
+        * For Joel: Adding additional EBS volumes raises questions
+        * Why add new volumes rather than just make the main volume large?
+        * Are there Snapshot differences?
+        * What is the performance hit for chosing encryption? Sub-options? Cost?
+        * ...and so on: There is a lot to unpack here
+* Step 5 Tags
+    * Notice the inheritance of tags across VMs, volumes and network interfaces: Nice feature
+    * For Joel: What sort of conventional wisdom exists for tagging practice?
+* Step 6 Configure Security Group
+    * Create new; name and description are defaults
+        * For Joel: How should we think about SGs? 
+        * Selecting an existing one raises the question: Who or what if anything is using this SG?
+        * It would seem I have a vast army of Zombie SGs
+    * Type SSH
+    * Protocol TCP
+    * Port Range 22
+    * Source Description Custom 0.0.0.0/0
+    * Description: Default text
+    * Add Rule: No rules added
+        * For Joel: Let's review all of these!
+        * Edit the SG on the fly? Or after launch?
+* Step 7 Review
+    * No changes
+    * Click Launch
+    * Pop up: Generate new PEM file, download: This will need to be permission-modified `chmod 400 file.pem`
+    * Launch
 
-
+The instance started up; and I immediately stopped it. There will be a pause before I can continue working on it. I'l re-start it then.
 
 
 
