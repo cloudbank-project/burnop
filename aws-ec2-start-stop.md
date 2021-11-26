@@ -1,19 +1,55 @@
-## Overview
+# Introduction
 
 
-EC2 instances left running overnight cost money. We're going to figure out how to turn them on and off automatically
-every day; and our stretch goal is a manual on-switch. Cost management: Begin!
-
-Follow this 
-[documentation link](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
-for the instructions. Here on this page it is a "personal narrative". So first I established a cloud account 
-and then I logged in as an **admin** User. 
+These are notes for managing cost on AWS by turning EC2 Virtual Machines on and off automatically. We proceed in three 
+stages. First in this **Introduction** we give a very condensed overview. Second in the **Synopsis** section we give a 
+more extended narrative that introduces some necessary terminology / jargon. Thirdly we have a **Thorough Walk-through**
+that is intended as step-by-step notes on what is going on. 
 
 
-## Procedural notes
+## Condensed overview
+
+
+We build both a start and a stop function into the AWS cloud. These are *functions* and not *Virtual Machines*. 
+They exist as code that runs without any reference to a host server; hence *serverless*. AWS calls such functions
+Lambda functions. So one will do the starting and the other will do the stopping. They must both have permission
+within the AWS cloud to perform this task; so they are granted *Roles* that have attached *Policies* to enable 
+just that. 
+
+
+In order for this task to be meaningful you must have one or more virtual machines that should regularly be 
+stopped and started in an automated fashion. (Virtual Machine is abbreviated VM and a VM on AWS is further
+jargonized to ***EC2 instance***. EC2 stands for Elastic Cloud Compute; and that is what AWS calls their 
+VMs.)
+
+
+If one were to leave a powerful cloud machine running over 
+the weekend (nobody stopped it): That will burn $60 of the cloud computing budget for no reason. 
+Our goal here will be to start each instance at 7AM Pacific Time and stop it at 6PM, Monday through Friday. 
+
+
+If a researcher wanted to use this VM on the weekend the simplest thing approach is to log in to the 
+AWS console, navigate to the list of VMs, and *Start* the one they wanted. 
+
+
+# Synopsis
+
+
+AWS compute infrastructure is secure; and this means some layers of abstraction are necessary. So what we are building
+here can appear to be a bit *elaborate*. Here is the medium-level overview of the procedure.
+
+
+# Thorough Walk-through
+
+## Get started
 
 > Suggestion: Read through these notes, then go through the procedural at the above link.
 
+- Log on to the AWS console as an IAM user with *admin* privileges
+- Follow this 
+[documentation link](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
+    - This page is a more detailed "personal narrative" of running through that documentation
+ 
 
 A Lambda function is serverless code that runs on AWS in response to a trigger of some sort. 
 We will build **Start** and **Stop** Lambda functions that will be triggered by a daily CloudWatch
@@ -24,8 +60,8 @@ alarm.
 > a test EC2 instance and only when you are satisfied everything is working properly should you re-point
 > the Lambda functions at your work instance. 
 >
-> To be super-safe do these two things on your valuable EC2 work instance:
-> - Turn on Terminate protection for the instance
+> To be super-safe do these two things with your valuable EC2 work instance:
+> - Turn on Terminate protection for the instance. This makes it harder to delete.
 > - Save the work instance as an Amazon Machine Image (AMI) (allows you to reconstitute your instance should it accidentally be terminated)
 
 
