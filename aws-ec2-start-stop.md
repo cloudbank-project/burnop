@@ -22,8 +22,12 @@ alarm.
 > ***IMPORTANT WARNING:*** If you already have an EC2 **work instance** running that includes work you value: 
 > *Do Not Wire These Lambda Functions Into That Instance!!!*  Something could go wrong. Instead set up
 > a test EC2 instance and only when you are satisfied everything is working properly should you re-point
-> the Lambda functions at your work instance. And to be super-safe, back up your work instance to an
-> Amazon Machine Image (AMI). Then if something goes awry you will be able to reconstitute your work instance.
+> the Lambda functions at your work instance. 
+>
+> To be super-safe do these two things on your valuable EC2 work instance:
+> - Turn on Terminate protection for the instance
+> - Save the work instance as an Amazon Machine Image (AMI) (allows you to reconstitute your instance should it accidentally be terminated)
+
 
 ## Starting an EC2
 
@@ -100,21 +104,71 @@ Here are notes on all seven console-wizard start steps for Launching an EC2.
     * Pop up: Generate new PEM file, download: This will need to be permission-modified `chmod 400 file.pem`
     * Launch
 
-The instance started up; and I immediately stopped it. There will be a pause before I can continue working on it. I'l re-start it then.
+The instance started up; so I immediately stopped it via the console. I will continue work later so I will re-start it then.
 
 
+## Policy and Role
+
+A **policy** on AWS is a JSON-format document that contains some logical language about what some *entity* can do. In 
+this case the entity will be able to start and stop EC2 instances in my account. A **role** on AWS is an IAM label. It can
+be affixed to an entity like (in this case) a Lambda function. The **role** has a **policy**; so this role/policy business
+is the AWS abstraction that permits us to build secure infrastructure. 
 
 
+Per the documentation I now create a policy and a role prior to creating the Lambda functions for start and stop. 
+The Lambda functions will be assigned the role and thereby inherit the policy so the system allows them to start and 
+stop instances. One more note: Policies exist globally on AWS; they are not confined to Regions.
 
-## Prior version of these notes here down
 
-* I created the necessary policy in the JSON editor (under IAM), named it `stop-instances`, tagged it so I know what it does
-* The IAM *Role* for pending Lambdas is `stop-instances`
-    * Notice the above *Policy* is in the *Role*. The *Role* is unassociated at this point
-        * A *Policy* is a text file that spells out AWS logic for what is permitted
-        * A *Role* is an entity that carries a *Policy*. In our case: The *Role* is an automated alarm entity
-* **Stop-Lambda** works...
-    * In the code source window: click on the left sidebar `lambda_function.py` to activate the editor for this file.
+AWS manages a long list of policies that are available for adoption by us Users. From the IAM Dashboard just the 
+policies we have conscripted for use are linked to. 
+
+
+* Question for Joel: Customer managed is mutually exclusive to AWS managed? What is third category 'AWS Managed job function'? 
+    * Degeneracy in Customer managed (e.g. basic Lambda execution): Can we clean this up? How to proceed?
+
+
+* Create policy
+    * Visual editor tab: You would think "Set Service to Lambda" but in fact: Do nothing. Switch to the JSON tab.
+    * JSON tab: Paste the policy text from the documentation
+    * Visual editor tab: Go back here and notice that the pasted JSON text has created two elements
+        * CloudWatch Logs (3 actions)
+        * EC2 (4 actions)
+            * For Joel: 3 Resource warnings and etcetera: How much do we need to learn about what goes on here? 
+    * Tags: Added `Name` as `ec2-start-stop`
+    * Review: Added Name (same as tag)
+    * Create Policy: ok
+
+
+* Create Role
+    * Select **Lambda** --> Next: Permissions
+    * Add the above Policy
+        * Often at this stage one might attach *multiple* policies. 
+            * The console keeps track of what we have selected (the full list may not be visible)
+            * We double-check at the end
+    * Tags: Added Name, Owner, Zombie remarks as above
+    * Review: Role name will be **ec2-start-stop**; ensure the Policy is the one intended
+    * Create role
+
+
+## Lambda functions
+
+
+We are creating two Lambda functions: **ec2-start** and **ec2-stop**. 
+
+
+* Lambda console -> Create function -> Author from scratch
+    * Basic info: 
+        * Name: **ec2-start** / **ec2-stop**
+        * Runtime: Documentation suggest Python 3.8; however I am choosing Python 3.9
+        * Permissions: Documentation a little out of date here; main thing is to be sure to select the Role created above
+        * **Create function** now takes us to the main Lambda configuration console
+
+    * Lambda configuration console
+        * Note there are six tabs below the Overview pane: Code, Test, Monitor, Configuration, Aliases, Versions
+        * Choose the Code tab
+            * In the code source window: click the left sidebar `lambda_function.py` to activate the editor for this file
+            * 
 
 
 > **IMPORTANT:** Make sure to adjust both region and instance values to match your implementation
