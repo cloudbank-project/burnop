@@ -192,7 +192,11 @@ policies we have conscripted for use are linked to.
 ## Lambda functions
 
 
-We are creating two Lambda functions: **ec2-start** and **ec2-stop**. 
+We are creating two Lambda functions: **ec2-start** and **ec2-stop**. Since I did **start** first I made sure 
+the EC2 test instance was *stopped*. 
+
+
+> Preferred practice: Create the Lambda functions in the same Region as the EC2 instance(s) of interest. 
 
 
 * Lambda console -> Create function -> Author from scratch
@@ -206,6 +210,13 @@ We are creating two Lambda functions: **ec2-start** and **ec2-stop**.
         * Note there are six tabs below the Overview pane: Code, Test, Monitor, Configuration, Aliases, Versions
         * Choose the Code tab
             * In the code source window: click the left sidebar `lambda_function.py` to activate the editor for this file
+            * Edit the file and click **Deploy** to make sure it registers
+        * Choose the Configuration tab
+            * Select the environment variables sub-tab (left side) and add the environment variables and values
+        * Test the Lambda function from the Test tab: Click **Test**.
+            * When the two Lambdas run they should respectively start / stop the test EC2 instance
+
+> This is the **start** code. The **stop** code: Just make the obvious changes to the last three lines.
 
 
 ```
@@ -215,35 +226,59 @@ region = os.environ['region']
 sns_topic = os.environ['sns_topic']
 friendly_EC2_name = os.environ['friendly_EC2_name']
 friendly_project_name = os.environ['friendly_project_name']
-instance_id = os.environ['instance_id']                 # something like 'i-aaabbbcccdddeeeff'
+instance_id = os.environ['instance_id']                       # something like 'i-aaabbbcccdddeeeff'
 
 ec2 = boto3.client('ec2', region_name=region)
+instances = [instance_id]
 
 def lambda_handler(event, context):
     print('start starting instances')
     ec2.start_instances(InstanceIds=instances)
-    print('done starting instances')
+    print('done starting instances')                         # want to replace with an SNS email message!
+```
+
+**Stop** Lambda code last three lines become: 
+
+```
+    print('start stopping instances')
+    ec2.stop_instances(InstanceIds=instances)
+    print('done stopping instances') 
 ```
 
 
-> **IMPORTANT:** Make sure to adjust both region and instance values to match your implementation
+The environment variables allow us to keep inside information out of the Lambda code; so it can safely
+be published on GitHub.
 
 
-> **IMPORTANT:** The instance IDs *should* be imported from environment variables to make this code more secure.
+At the moment there is a bit of extra machinery in this code. This will be built out later so we can send a 
+notification email. 
 
 
-* Fix: Do the import env vars for fully detailed walk-through that included the code
-    * Timeout is under the Configuration tab (not the default Code tab).
-    * Save the code and be sure to **Deploy** it
+What is missing is the automated timer -- an alarm clock -- that goes off every day to trigger these
+Lambda functions. 
 
-* Creating the CloudWatch alarm trigger
-    * Name, description, choose `Schedule` and `Cron expression`
-    * My cron format is `0  5  ?  *  3-7  *` which translates as "5 AM Zulu every Tuesday through Saturday" (10AM PDT)
-        * Days of the week are 1-7 SUN-SAT; but it uses less-than logic
-        * The ? wildcard means use days of week, not days of month (3rd field)
-    * After the alarm set: Return to the Lambda function and did a refresh: Now the CloudWatch alarm appears as a trigger
-        * I could have but did not do this from within the Lambda Function page
 
-Here is the code. To do: Change the information to reside in environment variables.
+## Creating the EventBridge alarm trigger
+
+* Choose + Add trigger --> EventBridge
+* Name, description, choose `Schedule` and `Expression`
+* For start time: `cron(0 14 ? * MON-FRI *)` translates as 2PM Zulu every week-day (7AM Pacific)
+* For stop time: `cron(0 1 ? * TUE-SAT *)` translates as "1AM Zulu every Tuesday through Saturday" (10AM Pacific)
+    * In the third field the ? wildcard means use days of week, not days of month
+* Return to the Lambda function and refresh: The EventBridge alarm appears as a trigger
+
+
+## Creating an email notification
+
+- Make the Lambda able to publish via policy/roll
+- Expand out the code as shown below
+- Create an SNS topic (not `.fifo`) that is reflected in the environment variable
+    - Add subscribers, e.g. choosing email and giving email addresses. Recipient must confirm.
+- Make sure the start and stop Lambdas send the appropriate messages
+
+
+```
+with SNS code here
+```
 
 
