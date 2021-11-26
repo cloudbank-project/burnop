@@ -272,11 +272,12 @@ Lambda functions.
 
 ## Creating an email notification
 
-- Make the Lambda able to publish via policy/roll
-- Expand out the code as shown below
 - Create an SNS topic (not `.fifo`) that is reflected in the environment variable
     - Add subscribers, e.g. choosing email and giving email addresses. Recipient must confirm.
-- Make sure the start and stop Lambdas send the appropriate messages
+- Make sure the Lambda function's **Role** include the policy **AmazonSNSFullAccess** as noted above
+- The code below has one additional environment variable (`account_number`, a 12-digit number (no hyphens))
+- The code below includes five additional lines that take care of sending the message via email
+
 
 
 Here is the Lambda ec2-stop code:
