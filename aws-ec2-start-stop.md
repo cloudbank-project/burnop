@@ -186,6 +186,8 @@ policies we have conscripted for use are linked to.
             * We double-check at the end
     * Tags: Added Name, Owner, Zombie remarks as above
     * Review: Role name will be **ec2-start-stop**; ensure the Policy is the one intended
+        * Also add a second policy to this Role: **AmazonSNSFullAccess**
+            * This allows us to send notification emails from the Lambda functions when they run
     * Create role
 
 
@@ -277,8 +279,60 @@ Lambda functions.
 - Make sure the start and stop Lambdas send the appropriate messages
 
 
+Here is the Lambda ec2-stop code:
+
+
 ```
-with SNS code here
+import json, os, boto3, datetime
+
+region = os.environ['region']
+sns_topic = os.environ['sns_topic']
+friendly_EC2_name = os.environ['friendly_EC2_name']
+friendly_project_name = os.environ['friendly_project_name']
+instance_id = os.environ['instance_id']                       # something like 'i-aaabbbcccdddeeeff'
+account_number = os.environ['account_number']
+
+ec2 = boto3.client('ec2', region_name=region)
+instances = [instance_id]
+
+def lambda_handler(event, context):
+    print('start stopping instances')
+    ec2.stop_instances(InstanceIds=instances)
+    print('done stopping instances') 
+    
+    email_body    = 'stopped EC2 ' + friendly_EC2_name + ' in project ' + friendly_project_name + '\n\n\n'
+    email_subject = 'EC2 stop'
+    sns           = boto3.client('sns')
+    arnstring     = 'arn:aws:sns:' + region + ':' + account_number + ':' + sns_topic
+    response      = sns.publish(TopicArn=arnstring, Message=email_body, Subject=email_subject)
 ```
 
+
+Here is the Lambda ec2-start code: 
+
+
+```
+import json, os, boto3, datetime
+
+region = os.environ['region']
+sns_topic = os.environ['sns_topic']
+friendly_EC2_name = os.environ['friendly_EC2_name']
+friendly_project_name = os.environ['friendly_project_name']
+instance_id = os.environ['instance_id']                       # something like 'i-aaabbbcccdddeeeff'
+account_number = os.environ['account_number']
+
+ec2 = boto3.client('ec2', region_name=region)
+instances = [instance_id]
+
+def lambda_handler(event, context):
+    print('start starting instances')                        # gets written to log file
+    ec2.start_instances(InstanceIds=instances)
+    print('done starting instances')                         # want to replace with an SNS email message!
+
+    email_body    = 'started EC2 ' + friendly_EC2_name + ' in project ' + friendly_project_name + '\n\n\n'
+    email_subject = 'EC2 start'
+    sns           = boto3.client('sns')
+    arnstring     = 'arn:aws:sns:' + region + ':' + account_number + ':' + sns_topic
+    response      = sns.publish(TopicArn=arnstring, Message=email_body, Subject=email_subject)
+```
 
