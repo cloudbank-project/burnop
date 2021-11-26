@@ -2,8 +2,10 @@
 
 
 These are notes for managing cost on AWS by turning EC2 Virtual Machines on and off automatically. We proceed in three 
-stages. First in this **Introduction** we give a very condensed overview. Second in the **Synopsis** section we give a 
-more extended narrative that introduces some necessary terminology / jargon. Thirdly we have a **Thorough Walk-through**
+stages. First in this [**Introduction**](#introduction) we give a very condensed overview. 
+Second in the [**Synopsis**](#synopsis) section we give a 
+more extended narrative that introduces some necessary terminology / jargon. 
+Thirdly we have a [**Thorough Walkthrough**](#thorough-walk-through)
 that is intended as step-by-step notes on what is going on. 
 
 
@@ -39,7 +41,7 @@ AWS compute infrastructure is secure; and this means some layers of abstraction 
 here can appear to be a bit *elaborate*. Here is the medium-level overview of the procedure.
 
 
-# Thorough Walk-through
+# Thorough Walkthrough
 
 ## Get started
 
