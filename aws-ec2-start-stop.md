@@ -1,7 +1,8 @@
-> This is a working document as the subject matter is a launching point for further "home building" of IT infrastructure
+> This is a working document as the subject matter is a launching point for further "Researcher-built" IT infrastructure
 > on the AWS cloud. At the moment there are a lot of references to someone named "Joel" concerning questions we would 
-> like to address. It's a bit like a Beckett play. Main thing here is: This document and the AWS document it refers to
-> can save you a phenomenal amount of money on your cloud use; at the cost of learning about the basic machinery of 
+> like to address. It's a bit like a Beckett play: Joel will be here at any moment. Main thing: This document and the 
+> [AWS document it refers to](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
+> can save you a phenomenal amount of money on cloud use. The time cost is a few hours learning the basic machinery of 
 > Amazon Web Services. 
 
 
@@ -32,13 +33,29 @@ jargonized to ***EC2 instance***. EC2 stands for Elastic Cloud Compute; and that
 VMs.)
 
 
+Jargon so far: 
+
+
+* Serverless function on AWS: **Lambda function** (includes a few lines of Python code in this case)
+* Badge affixed to a Lambda: Is called a **Role**
+* Logical permission construct, as a text (typically JSON) document: Is called a **Policy** and it is attached to a **Role**
+* Virtual Machine where you, the Researcher, do your work: On AWS is called an **EC2 instance**
+
+
 If one were to leave a powerful cloud machine running over 
 the weekend (nobody stopped it): That will burn $60 of the cloud computing budget for no reason. 
 Our goal here will be to start each instance at 7AM Pacific Time and stop it at 6PM, Monday through Friday. 
 
 
-If a researcher wanted to use this VM on the weekend the simplest thing approach is to log in to the 
-AWS console, navigate to the list of VMs, and *Start* the one they wanted. 
+If a researcher wanted to use this VM on the weekend: Uh oh, the VM (the EC2 instance) is *stopped*. How to
+start it? The simplest approach is to log in to the AWS console, navigate to the list of VMs, and *Start* the 
+one we want. Here is a list of this and other methods: Multiple ways of working on the cloud.
+
+
+* Log in to the AWS console through a browser, navigate to the EC2 dashboard, **start** the instance
+* Install a command line utility on your laptop and issue a **start** command from that utility
+* Install an AWS-interactivity library called **boto3** and use that with some Python code to **start** the VM
+* Create a serverless **Lambda function** on AWS that can receive a signal from us and respond by **starting** the VM
 
 
 # Synopsis
