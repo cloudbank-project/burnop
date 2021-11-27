@@ -38,7 +38,54 @@ AWS console, navigate to the list of VMs, and *Start* the one they wanted.
 
 
 AWS compute infrastructure is secure; and this means some layers of abstraction are necessary. So what we are building
-here can appear to be a bit *elaborate*. Here is the medium-level overview of the procedure.
+here can appear to be a bit *elaborate*, like a Rube Goldberg machine. Here is the medium-level overview of the procedure.
+
+
+Let's start with the abstract notion of an **alarm clock**. This comes from an AWS service called **Event Bridge**. 
+So we set two alarms using `cron` time notation. One goes off every day at 7AM Pacific time. The other goes off 
+at 6PM. They are respectively attached as triggers to two AWS *serverless* Lambda functions **ec2-start** and **ec2-stop**.
+
+
+The Lambda functions have a small block of Python code available to run when the Lambda is triggered by these alarms. 
+Again: Lambda function**s** plural because there is one to stop the EC2 instance and one to start it. 
+The code is almost entirely the same between them and breaks down into four sections: 
+
+
+- Import a couple of key libraries
+- Obtain a few environment variables from a local secure *Configuration* structure
+- Make a Python call to the AWS API to stop/start a test instance
+- Send an email reporting this action (for verification purposes)
+
+
+For these Lambda functions to operate we need two more entities in play on AWS. First we must have an actual 
+EC2 instance to start and stop. This has a unique ID, a string that is retained as one of those *Configuraion* values.
+In passing: Keeping identification strings safely hidden away, separate from Lambda code, is a good security practice.
+
+
+The second thing we need is an abstraction called a **Role** that has two **Policies** attached. This **Role** can be 
+conveyed upon each of the Lambda functions; rather like a badge. The two **Policies** enable any entity to (a) start or 
+stope EC2 instances and (b) use the AWS Simple Notification Service to send an email message. 
+
+
+So now the sequence of events runs as follows: 
+
+
+- The EventBridge alarm goes off at 7AM Pacific time
+- The ec2-start Lambda code runs
+    - It imports necessary libraries and then reads some securely stored configuration values
+    - It starts the EC2 instance 
+        - This is possible only because the Lambda function has a Role with a Policy that permits this action
+    - It sends an email reporting this action to whoever is on the associated SNS topic email distribution list
+        - This is possible only because the Lambda function has a Role with a Policy that permits this action
+- The EC2 instance -- now running -- is available for use
+- Later in the day, at 6 PM Pacific time, the same thing happens again only this time to *stop* the EC2 instance
+    - Eventually once we are tired of all the email notifications we might turn them off
+
+
+Because the EC2 instance is not running from 6PM to 7AM it costs 11/24 as much as an instance that is on all the time.
+Of course this is for only 5 of 7 days in the week. Over the weekend the instance is stopped and is not 
+accruing further cost. 
+
 
 
 # Thorough Walkthrough
@@ -141,6 +188,8 @@ Here are notes on all seven console-wizard start steps for Launching an EC2.
     * Click Launch
     * Pop up: Generate new PEM file, download: This will need to be permission-modified `chmod 400 file.pem`
     * Launch
+* For Joel: Once it exists; shall we set up a separate Lambda that can notice a signal and start it?
+
 
 The instance started up; so I immediately stopped it via the console. I will continue work later so I will re-start it then.
 
@@ -218,6 +267,7 @@ the EC2 test instance was *stopped*.
         * Test the Lambda function from the Test tab: Click **Test**.
             * When the two Lambdas run they should respectively start / stop the test EC2 instance
 
+
 > This is the **start** code. The **stop** code: Just make the obvious changes to the last three lines.
 
 
@@ -229,6 +279,7 @@ sns_topic = os.environ['sns_topic']
 friendly_EC2_name = os.environ['friendly_EC2_name']
 friendly_project_name = os.environ['friendly_project_name']
 instance_id = os.environ['instance_id']                       # something like 'i-aaabbbcccdddeeeff'
+account_number = os.environ['account_number']                 # something like 123412341234, a 12-digit number
 
 ec2 = boto3.client('ec2', region_name=region)
 instances = [instance_id]
@@ -272,11 +323,13 @@ Lambda functions.
 
 ## Creating an email notification
 
-- Create an SNS topic (not `.fifo`) that is reflected in the environment variable
-    - Add subscribers, e.g. choosing email and giving email addresses. Recipient must confirm.
-- Make sure the Lambda function's **Role** include the policy **AmazonSNSFullAccess** as noted above
-- The code below has one additional environment variable (`account_number`, a 12-digit number (no hyphens))
-- The code below includes five additional lines that take care of sending the message via email
+- Create an SNS topic (not `.fifo`)
+    - It's **Name** is the same as the `sns_topic` environment variable
+    - Add subscribers to the topic: Choose email and provide email addresses. Recipients must confirm.
+- Make sure the Lambda function's **Role** includes the policy **AmazonSNSFullAccess** as noted above
+- The code below uses the environment variable `account_number`. This is the 12-digit AWS account number (no hyphens).
+- The code below is as above with the SNS email notification added
+    - This requries five additional lines of code
 
 
 
