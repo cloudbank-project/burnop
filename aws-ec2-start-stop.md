@@ -1,3 +1,10 @@
+> This is a working document as the subject matter is a launching point for further "home building" of IT infrastructure
+> on the AWS cloud. At the moment there are a lot of references to someone named "Joel" concerning questions we would 
+> like to address. It's a bit like a Beckett play. Main thing here is: This document and the AWS document it refers to
+> can save you a phenomenal amount of money on your cloud use; at the cost of learning about the basic machinery of 
+> Amazon Web Services. 
+
+
 # Introduction
 
 
@@ -197,9 +204,11 @@ The instance started up; so I immediately stopped it via the console. I will con
 ## Policy and Role
 
 A **policy** on AWS is a JSON-format document that contains some logical language about what some *entity* can do. In 
-this case the entity will be able to start and stop EC2 instances in my account. A **role** on AWS is an IAM label. It can
-be affixed to an entity like (in this case) a Lambda function. The **role** has a **policy**; so this role/policy business
-is the AWS abstraction that permits us to build secure infrastructure. 
+this case the entity will be able to start and stop EC2 instances in my account. A **role** on AWS is an IAM label; 
+like a badge that a sheriff might wear in a western film. A **role** can
+be affixed to an entity like (in this case) a Lambda function. The **role** has a **policy**; so the *role/policy* business
+is the AWS abstraction that permits us to build secure infrastructure. If your entity is designed to perform 
+an operation on AWS: It can't do that operation without first taking on a role with an appropriate policy or policies attached.
 
 
 Per the documentation I now create a policy and a role prior to creating the Lambda functions for start and stop. 
