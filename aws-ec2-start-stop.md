@@ -341,10 +341,14 @@ Lambda functions.
 
 * Choose + Add trigger --> EventBridge
 * Name, description, choose `Schedule` and `Expression`
-* For start time: `cron(0 14 ? * MON-FRI *)` translates as 2PM Zulu every week-day (7AM Pacific)
-* For stop time: `cron(0 1 ? * TUE-SAT *)` translates as "1AM Zulu every Tuesday through Saturday" (10AM Pacific)
+* For start time: `cron(0 16 ? * MON-FRI *)` translates as 4 PM Zulu every week-day (8 AM Pacific Standard)
+* For stop time: `cron(0 2 ? * TUE-SAT *)` translates as "2AM Zulu every Tuesday through Saturday" (6 PM Pacific Standard)
     * In the third field the ? wildcard means use days of week, not days of month
 * Return to the Lambda function and refresh: The EventBridge alarm appears as a trigger
+
+
+> Notice that these alarms will trigger a stop of the VM at 6PM; and this will happen regardless of whether 
+> a researcher is logged in, editing a file, hasn't saved their work for three hours... so "*save early save often*"
 
 
 ## Creating an email notification
