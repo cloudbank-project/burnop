@@ -342,7 +342,7 @@ def lambda_handler(event, context):
     response      = sns.publish(TopicArn=arnstring, Message=email_body, Subject=email_subject)
 ```
 
-**Stop** Lambda code: The three key 'start' lines become: 
+**Stop** Lambda code: The key 'start' code lines to modify for 'stop' are: 
 
 ```
     print('start stopping instances')                        # print() writes to log file
