@@ -121,9 +121,7 @@ have a second trigger as well. We will add this trigger in the form of the AWS A
 up is very fast, a matter of a couple of minutes. The result of the creation is a URL like this one:
 
 
-**```
-https://alphabetsoup.execute-api.us-west-2.amazonaws.com/default/ec2-start
-```**
+**`https://alphabetsoup.execute-api.us-west-2.amazonaws.com/default/ec2-start`**
 
 
 Simply entering this URL into a browser address bar is sufficient to trigger the Lambda function and start the 
