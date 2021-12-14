@@ -9,7 +9,9 @@
 # Introduction
 
 
-These are notes for managing cost on AWS by turning EC2 Virtual Machines on and off automatically. We proceed in three 
+These are notes for managing cost on AWS by turning EC2 Virtual Machines on and off automatically. 
+In setting it up we also enable manual on / off by means of an AWS API Gateway service.
+We proceed in three 
 stages. First in this [**Introduction**](#introduction) we give a very condensed overview. 
 Second in the [**Synopsis**](#synopsis) section we give a 
 more extended narrative that introduces some necessary terminology / jargon. 
@@ -48,14 +50,17 @@ Our goal here will be to start each instance at 7AM Pacific Time and stop it at 
 
 
 If a researcher wanted to use this VM on the weekend: Uh oh, the VM (the EC2 instance) is *stopped*. How to
-start it? The simplest approach is to log in to the AWS console, navigate to the list of VMs, and *Start* the 
-one we want. Here is a list of this and other methods: Multiple ways of working on the cloud.
+start it? One approach is to log in to the AWS console, navigate to the list of VMs, and *Start* the 
+one we want. In the walk-through below we provide a simpler method that uses a URL to flip the switch.
 
 
-* Log in to the AWS console through a browser, navigate to the EC2 dashboard, **start** the instance
-* Install a command line utility on your laptop and issue a **start** command from that utility
-* Install an AWS-interactivity library called **boto3** and use that with some Python code to **start** the VM
-* Create a serverless **Lambda function** on AWS that can receive a signal from us and respond by **starting** the VM
+Methods to turn EC2 instances on / off manually:
+
+
+* Establish a **Lambda function** triggered via API Gateway; and use two URLs for **start** / **stop**
+* Log in to the AWS console through a browser, navigate to the EC2 dashboard, **start** / **stop** the instance
+* Install a command line utility on a local machine and issue a **start** / **stop** command using that utility
+* Install an AWS-interact library called **boto3** and use Python code to **start** / **stop** the VM
 
 
 # Synopsis
@@ -110,6 +115,19 @@ Because the EC2 instance is not running from 6PM to 7AM it costs 11/24 as much a
 Of course this is for only 5 of 7 days in the week. Over the weekend the instance is stopped and is not 
 accruing further cost. 
 
+
+Finally just because the Lambda function has a trigger (the EventBridge alarm clock), that does not mean it can't 
+have a second trigger as well. We will add this trigger in the form of the AWS API Gateway service. Setting this
+up is very fast, a matter of a couple of minutes. The result of the creation is a URL like this one:
+
+
+**```
+https://alphabetsoup.execute-api.us-west-2.amazonaws.com/default/ec2-start
+```**
+
+
+Simply entering this URL into a browser address bar is sufficient to trigger the Lambda function and start the 
+instance.
 
 
 # Thorough Walkthrough
@@ -294,29 +312,38 @@ the EC2 test instance was *stopped*.
             * When the two Lambdas run they should respectively start / stop the test EC2 instance
 
 
-> This is the **start** code. The **stop** code: Just make the obvious changes to the last three lines.
+> This is the **start** code. The **stop** code: Just make the obvious changes to the three key lines of code.
 
 
 ```
 import json, os, boto3, datetime
 
+# relates to sending the email notification via SNS
 region = os.environ['region']
 sns_topic = os.environ['sns_topic']
 friendly_EC2_name = os.environ['friendly_EC2_name']
 friendly_project_name = os.environ['friendly_project_name']
-instance_id = os.environ['instance_id']                       # something like 'i-aaabbbcccdddeeeff'
-account_number = os.environ['account_number']                 # something like 123412341234, a 12-digit number
+account_number = os.environ['account_number']
 
-ec2 = boto3.client('ec2', region_name=region)
+# relates to starting the instance
+instance_id = os.environ['instance_id']                      # something like 'i-aaabbbcccdddeeeff'
 instances = [instance_id]
+ec2 = boto3.client('ec2', region_name=region)
 
 def lambda_handler(event, context):
-    print('start starting instances')
+    
+    print('start starting instances')                        # print() writes to log file
     ec2.start_instances(InstanceIds=instances)
-    print('done starting instances')                         # want to replace with an SNS email message!
+    print('done starting instances')
+
+    sns           = boto3.client('sns')
+    email_body    = 'started EC2 ' + friendly_EC2_name + ' in project ' + friendly_project_name + '\n\n\n'
+    email_subject = 'EC2 start'
+    arnstring     = 'arn:aws:sns:' + region + ':' + account_number + ':' + sns_topic
+    response      = sns.publish(TopicArn=arnstring, Message=email_body, Subject=email_subject)
 ```
 
-**Stop** Lambda code last three lines become: 
+**Stop** Lambda code: The three key 'start' lines become: 
 
 ```
     print('start stopping instances')
@@ -335,6 +362,30 @@ notification email.
 
 What is missing is the automated timer -- an alarm clock -- that goes off every day to trigger these
 Lambda functions. 
+
+
+## Creating an API Gateway trigger
+
+
+Suppose we also wish to be able to turn an EC2 instance on / off using the same two Lambda functions. 
+This can be done automatically every day as described below using an EventBridge alarm trigger. The 
+alarm "goes off" and triggers the Lambda function to run. We can also add an API Gateway trigger that
+allows us to turn the instance on / off using an endpoint URL. 
+
+
+- Choose + Add trigger --> API Gateway
+- Dropdown for "Create / attach existing" --> choose Create an API
+- API type: HTTP API
+- Security: Open
+    - For Joel: Evaluate alternatives and risk
+- Other fields: Default values are fine
+- Click the **Add** button
+
+
+This will produce an endpoint URL found in the Lambda function page under the Configuration tab. 
+Pasting this URL into a browser will run the Lambda function and start or stop the instance.
+It also brings up the text response `null` in the browser when it runs.
+
 
 
 ## Creating the EventBridge alarm trigger
