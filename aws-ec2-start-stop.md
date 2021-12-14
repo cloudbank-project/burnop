@@ -132,21 +132,22 @@ instance.
 
 ## Get started
 
-> Suggestion: Read through these notes, then go through the procedural at the above link.
+> Suggestion: Read through these notes, then go through the procedural at the link below. The procedural is
+> pretty thorough and these notes are intended as supplemental guide rails. 
 
 - Log on to the AWS console as an IAM user with *admin* privileges
 - Follow this 
 [documentation link](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)
-    - This page is a more detailed "personal narrative" of running through that documentation
  
 
 A Lambda function is serverless code that runs on AWS in response to a trigger of some sort. 
 We will build **Start** and **Stop** Lambda functions that will be triggered by a daily CloudWatch
 alarm.
 
+
 > ***IMPORTANT WARNING:*** If you already have an EC2 **work instance** running that includes work you value: 
 > *Do Not Wire These Lambda Functions Into That Instance!!!*  Something could go wrong. Instead set up
-> a test EC2 instance and only when you are satisfied everything is working properly should you re-point
+> an inexpensive test EC2 instance and only when you are satisfied everything is working properly should you re-point
 > the Lambda functions at your work instance. 
 >
 > To be super-safe do these two things with your valuable EC2 work instance:
@@ -354,12 +355,11 @@ The environment variables allow us to keep inside information out of the Lambda 
 be published on GitHub.
 
 
-At the moment there is a bit of extra machinery in this code. This will be built out later so we can send a 
-notification email. 
+By making `instances` a Python **list** it is of course possible to start / stop many EC2 instances.
 
 
-What is missing is the automated timer -- an alarm clock -- that goes off every day to trigger these
-Lambda functions. 
+What is missing is the triggering system for these Lambda functions. For each we install two such
+triggers: A manual trigger and an automated timer -- an alarm clock -- that goes off every workday.
 
 
 ## Creating an API Gateway trigger
@@ -388,16 +388,23 @@ It also brings up the text response `null` in the browser when it runs.
 
 ## Creating the EventBridge alarm trigger
 
+
 * Choose + Add trigger --> EventBridge
 * Name, description, choose `Schedule` and `Expression`
 * For start time: `cron(0 16 ? * MON-FRI *)` translates as 4 PM Zulu every week-day (8 AM Pacific Standard)
-* For stop time: `cron(0 2 ? * TUE-SAT *)` translates as "2AM Zulu every Tuesday through Saturday" (6 PM Pacific Standard)
+* For stop time: `cron(0 1 ? * TUE-SAT *)` translates as "1 AM Zulu every Tuesday through Saturday" (5 PM Pacific Standard)
     * In the third field the ? wildcard means use days of week, not days of month
 * Return to the Lambda function and refresh: The EventBridge alarm appears as a trigger
 
 
 > Notice that these alarms will trigger a stop of the VM at 6PM; and this will happen regardless of whether 
 > a researcher is logged in, editing a file, hasn't saved their work for three hours... so "*save early save often*"
+
+
+## Starting a running instance
+
+
+Starting a running instance or stopping a stopped instance has no effect. 
 
 
 ## Creating an email notification
