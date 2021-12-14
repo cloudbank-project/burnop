@@ -345,9 +345,13 @@ def lambda_handler(event, context):
 **Stop** Lambda code: The three key 'start' lines become: 
 
 ```
-    print('start stopping instances')
+    print('start stopping instances')                        # print() writes to log file
     ec2.stop_instances(InstanceIds=instances)
-    print('done stopping instances') 
+    print('done stopping instances')
+
+    sns           = boto3.client('sns')
+    email_body    = 'stopped EC2 ' + friendly_EC2_name + ' in project ' + friendly_project_name + '\n\n\n'
+    email_subject = 'EC2 stop'
 ```
 
 
