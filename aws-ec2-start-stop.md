@@ -6,6 +6,20 @@
 > Amazon Web Services. 
 
 
+# Pre-Burnop AWS Account Security Questions
+
+* Suppose I want to want to have a massive security failure: What are the top N methods I should use?
+    - I wonder how often `.rhistory` figures in...
+    - Corollary: Should we simply teach **roles** and **policies** from the outset, i.e. ***never*** use AKs?
+    - We are considering a Security training module... what would you suggest?
+    - Are there real-time cost monitoring tools we can refresh our memory on?
+        - "Scram the reactor" idea
+    - It would be ideal to have a box (confidence boundary) around...
+        - You must be aware of... / Your team members must be aware of...
+        - Best is to install this machinery on your AWS account
+        - In addition to external threat there is an attrition (zombie) factor. Here is the recipe to address spend creep...
+
+
 # Introduction
 
 
