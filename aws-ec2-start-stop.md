@@ -45,6 +45,8 @@
         - HPC same (harder to do) with comm benchmarking for "is this efficient?" eval
         - Licensed software: Getting it rolling at scale on the AWS cloud
         - CNN: Includes suiting to available GPUs on AWS (training / inference) to circumvent global shortage
+        - Hosting a datset for our domain community
+            * Simplest model: S3 bucket, public, publish the URL, it looks like download files, click, download, no problem right? License attachment?
 
 
 # Introduction
@@ -206,6 +208,7 @@ Here are notes on all seven console-wizard start steps for Launching an EC2.
 * Step 1 Image (OS): Ubuntu Server 64-bit x86; noting this is a choice of an AMI
     * The Quick Start is one of four tabs, the others being My AMIs, AWS Marketplace and Community AMIs
     * Question for Joel: Talk about these other tabs, how they might jump start a project
+        * Are they replicated across Regions?
 * Step 2 Instance Type: **c4.large** as a cheap test VM
 * Step 3 Configure Instance... here we use strictly Default values; and I add notes on "What is this option good for?"
     * Number: 1
@@ -221,18 +224,19 @@ Here are notes on all seven console-wizard start steps for Launching an EC2.
     * DNS Hostname: Default
         * For Joel: Again what are the options here?
     * Placement group: Un-checked
-        * For Joel: What is the function of a Placement group? 
-        * **Cluster**, **Partition** and **Spread** seem to correspond to cluster computing and two types of failsafe...
-        * Could use further explanation. Also how do Placement Groups interact with VPCs? 
+        * For Joel: Insight on Placement Groups: **Cluster**, **Partition** and **Spread** (latter two relate to failsafe)
+            * Cluster: Instance type supports enhanced networking: Is this the end of the road in HPC optimization?
     * Capacity Reservation: Open
-        * For Joel: What does this do?
+        * For Joel: Is this cheaper than the instance rate? Confirm: Seems very 'business mindframe'
     * Domain join directory: No directory
-        * For Joel: When do I need one? AT built braininfo.org; do these persist as zombies? 
+        * For Joel: Let's describe these in practical C/B terms. AT built braininfo.org; do they persist as zombies? 
     * IAM Role: None
         * For Joel: Many are listed in the drop-down. Zero cost zombies?
         * Cleaning up old Roles: Can we look at one and ask "What resources have this Role?"
+        * Do I need to understand instances as Actors for this IAM Role assignment to be meaningful?
     * CPU Options: Un-checked
-        * For Joel: When checking this are we overriding the instance specs from above?
+        * [Documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-specify-cpu-options.html)
+        * For Joel: When checking this we override native instance specs? Typical use pattern?
     * Shutdown behavior: Stop
         * For Joel: Terminate option is for disposable use cases... elaborate?
     * Stop-Hibernate behavior (unchecked): What is this?
