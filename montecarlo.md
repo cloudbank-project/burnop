@@ -1,7 +1,11 @@
 # Monte Carlo profiling
 
 I found this response on [stack overflow](https://stackoverflow.com/questions/3045556/how-to-profile-my-code/3068045): 
-Actually a quote within a quote. It is both amusing and useful-sounding. In response to the question "How do I profile my code?"
+Actually a quote within a quote. It is both amusing and useful-sounding. (I have also transferred this exchange to
+the [CloudBank community forum](https://community.cloudbank.org).
+
+
+In response to the question "How do I profile my code?"
 
 
 > The standard answer to this question is to use [**cProfile**](http://docs.python.org/library/profile.html#instant-user-s-manual).
