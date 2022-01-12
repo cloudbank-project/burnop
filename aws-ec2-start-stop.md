@@ -9,16 +9,42 @@
 # Pre-Burnop AWS Account Security Questions
 
 * Suppose I want to want to have a massive security failure: What are the top N methods I should use?
-    - I wonder how often `.rhistory` figures in...
-    - Corollary: Should we simply teach **roles** and **policies** from the outset, i.e. ***never*** use AKs?
-    - We are considering a Security training module... what would you suggest?
-    - Are there real-time cost monitoring tools we can refresh our memory on?
-        - "Scram the reactor" idea
-    - It would be ideal to have a box (confidence boundary) around...
+    - Thanks to Joel we have a Failsafe procedural for restoring compromised data. So method 1 is "Don't set up a Data Failsafe".
+    - Method 2: We have Access Keys on GitHub, we have how version history keeps them around, and we have the `.rhistory` mode
+        - Can **roles** and **policies** completely circumvent the use of AKs?
+            - Suppose for example I want to use the CLI to operate some AWS machinery... is there a R/P approach???
+* **Security And Cost Management** training module... let's design it
+    - Real-time cost monitoring tools? Towards "Scram the reactor"
+    - Review Naomi ref 1
+    - Review Naomi ref 2
+    - Big Picture 'This is what you must know', we want a Confidence Box
         - You must be aware of... / Your team members must be aware of...
         - Failsafe backup storage: Done!
-        - Best is to install this machinery on your AWS account
-        - In addition to external threat there is an attrition (zombie) factor. Here is the recipe to address spend creep...
+        - Best is to install machinery A, B, C, D on your AWS account (starting with CloudTrail)
+        - Why is cost management added to security? Because un-terminated resources will drain the bank
+    - Tactics
+        - I.i Bad Guy Stories
+            - Access Keys etcetera: See above
+            - Failsafe: How do RansomWare attacks happen?
+            - VMs ssh/sftp Key Pairs: Do we have the complete picture? 
+            - When do I need Big-U IT to set me up with a VPN for AWS? Please explain.
+        - I.ii Resources and cost management
+            - I am not doing *anything* but my AWS account cost me $23 today. Procedural?
+            - How much do my snapshots cost me?
+            - My dataset on S3 is public access. So?
+        - I.iii Quotidian practice
+            - On/Off switch management: Timed + Manual
+- Event planning 2022
+    - NA Repro-Hack
+        - Solicitation for proposals: Your research, AWS cloud, 3 days
+        - Award some slots based on person power
+        - Do advance homework: How to do it, and how to go an extra cloud mile
+        - Run similar events with other vendors 
+    - Traditional Hack Event: Build Cloud Infrastructure With AWS Pros
+        - HTC with checkpointing on Spot
+        - HPC same (harder to do) with comm benchmarking for "is this efficient?" eval
+        - Licensed software: Getting it rolling at scale on the AWS cloud
+        - CNN: Includes suiting to available GPUs on AWS (training / inference) to circumvent global shortage
 
 
 # Introduction
