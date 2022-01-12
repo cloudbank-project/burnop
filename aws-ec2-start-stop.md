@@ -47,6 +47,10 @@
         - CNN: Includes suiting to available GPUs on AWS (training / inference) to circumvent global shortage
         - Hosting a datset for our domain community
             * Simplest model: S3 bucket, public, publish the URL, it looks like download files, click, download, no problem right? License attachment?
+            * Briefly on the himatdata bucket
+                - How to list contents? So someone can download...
+                - Security precautions; re-download x inf a concern?
+                - Download data files works; not directories; 
 
 
 # Introduction
